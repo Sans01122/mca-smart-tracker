@@ -13,11 +13,21 @@ st.write("MCA 2nd Sem Practical Examination Project")
 # 2. Hardcoded Top Assets (Simplifies user inputs)
 tickers = ['AAPL', 'MSFT', 'GOOGL', 'AMZN']
 
-# 3. Dynamic Data Pipeline Function
+# 3. Dynamic Data Pipeline Function with Format Fix
 @st.cache_data
 def load_data():
-    # Downloads 1 year of daily close prices automatically
-    return yf.download(tickers, period="1y")['Adj Close']
+    # Downloads 1 year of data with traditional column layout
+    df = yf.download(tickers, period="1y", group_by="ticker", auto_adjust=False)
+    
+    # Extract only the Close or Adj Close data safely for each ticker
+    cleaned_df = pd.DataFrame()
+    for ticker in tickers:
+        if 'Adj Close' in df[ticker].columns:
+            cleaned_df[ticker] = df[ticker]['Adj Close']
+        else:
+            cleaned_df[ticker] = df[ticker]['Close']
+            
+    return cleaned_df
 
 try:
     data = load_data()
