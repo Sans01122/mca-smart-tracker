@@ -8,7 +8,7 @@ import numpy as np
 # 1. Page Title and Configuration
 st.set_page_config(page_title="AI Portfolio Tracker", layout="wide")
 st.title("Smart AI Investment Portfolio Tracker")
-st.write("MCA 2nd Sem Practical Examination Project")
+st.write("Real-time financial analytics and predictive forecasting dashboard.")
 
 # 2. Hardcoded Top Assets (Simplifies user inputs)
 tickers = ['AAPL', 'MSFT', 'GOOGL', 'AMZN']
