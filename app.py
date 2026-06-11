@@ -44,10 +44,17 @@ try:
         fig = px.pie(values=[25, 25, 25, 25], names=tickers, title="Portfolio Balance Matrix")
         st.plotly_chart(fig, use_container_width=True)
 
-    # 5. Machine Learning Core Engine
+    # 5. Machine Learning Core Engine (With Interactive Forecasting Slider)
     st.markdown("---")
-    st.subheader("Machine Learning Trend Forecasting (Next 30 Days)")
-    selected_stock = st.selectbox("Select target asset to execute ML Model:", tickers)
+    st.subheader("Machine Learning Trend Forecasting")
+    
+    # Create two side-by-side columns for user input parameters
+    input_col1, input_col2 = st.columns([1, 1])
+    with input_col1:
+        selected_stock = st.selectbox("Select target asset to execute ML Model:", tickers)
+    with input_col2:
+        # Dynamic slider allowing users to actively change the forecast range
+        forecast_days = st.slider("Select forecast horizon (Days):", min_value=7, max_value=90, value=30)
     
     # Process sequential matrix arrays
     stock_prices = data[selected_stock].dropna()
@@ -58,8 +65,8 @@ try:
     model = LinearRegression()
     model.fit(X, y)
     
-    # Run predictions for future index parameters
-    future_days = np.arange(len(stock_prices), len(stock_prices) + 30).reshape(-1, 1)
+    # Run predictions using the dynamic slider value instead of a fixed 30
+    future_days = np.arange(len(stock_prices), len(stock_prices) + forecast_days).reshape(-1, 1)
     predictions = model.predict(future_days)
     
     # Clean structures to feed graph rendering engine
@@ -68,7 +75,7 @@ try:
     final_df = pd.concat([hist_df, pred_df])
     
     # Draw real-time prediction graph
-    fig_forecast = px.line(final_df, x="Day", y="Price", color="Dataset Type", title=f"{selected_stock} Predictive Trajectory Map")
+    fig_forecast = px.line(final_df, x="Day", y="Price", color="Dataset Type", title=f"{selected_stock} {forecast_days}-Day Predictive Trajectory Map")
     st.plotly_chart(fig_forecast, use_container_width=True)
 
 except Exception as e:
